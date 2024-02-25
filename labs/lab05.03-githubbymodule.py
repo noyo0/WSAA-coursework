@@ -1,5 +1,5 @@
 from github import Github
-from config import config as cfg
+from labs.config import config as cfg
 import requests
 
 apikey = cfg
