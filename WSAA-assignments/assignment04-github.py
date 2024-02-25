@@ -7,7 +7,7 @@
 from github import Github # module to interact with Github API
 from config import config # credentials
 import requests # HTTP client library
-import time
+
 
 apikey = config # store authentication key
 
@@ -32,17 +32,13 @@ response = requests.get(urlOfFile)
 contentOfFile = response.text 
 
 #replace the text in the file
-newContents = contentOfFile.replace("Andrew","Norbert") # https://www.w3schools.com/python/ref_string_replace.asp
+newContents = contentOfFile.replace("Andrew", "Norbert") # https://www.w3schools.com/python/ref_string_replace.asp
 gitHubResponse=repo.update_file(fileInfo.path,"updated by assignment04-github.py", newContents,fileInfo.sha) 
 #print (gitHubResponse)
 print("Changing file content...")
 #check file content after change
 response = requests.get(urlOfFile) 
-ChangedFile = response.text 
+ChangedFile = response.text
+print("updated content: \n",ChangedFile)
 
-# I have to repeat the request for some reason. Otherwise I have to run the script twice to see the change
-time.sleep(5)
-#check file content after change
-response = requests.get(urlOfFile) 
-ChangedFile = response.text 
-print ("CONTENTS\n",ChangedFile)
+# I have to run the script twice to see the change 🤷‍♀️
