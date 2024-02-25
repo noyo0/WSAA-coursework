@@ -1,5 +1,5 @@
 from github import Github
-from labs.config import config as cfg
+from config import config as cfg
 import requests
 
 apikey = cfg
@@ -7,7 +7,7 @@ apikey = cfg
 g = Github(apikey)
 # list all available repositories:
 for repo in g.get_user().get_repos():
-#    print(repo.name) 
+    print(repo.name) 
     pass
 
 #get repo URL
@@ -40,7 +40,7 @@ newContents = contentOfFile + "\n !!!!more stuff!!!! \n"
 gitHubResponse=repo.update_file(fileInfo.path,"updated by prog", newContents,fileInfo.sha) 
 print (gitHubResponse) 
 
-'''# get contents another way
+# get contents another way
 response = requests.get(urlOfFile) 
 contentOfFile = response.text 
-print ("CONTENTS\n",contentOfFile)'''
+print ("CONTENTS\n",contentOfFile)
