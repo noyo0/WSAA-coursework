@@ -32,13 +32,12 @@ response = requests.get(urlOfFile)
 contentOfFile = response.text 
 
 #replace the text in the file
-newContents = contentOfFile.replace("Andrew", "Norbert") # https://www.w3schools.com/python/ref_string_replace.asp
+newContents = contentOfFile.replace("Andrew","Norbert") # https://www.w3schools.com/python/ref_string_replace.asp
 gitHubResponse=repo.update_file(fileInfo.path,"updated by assignment04-github.py", newContents,fileInfo.sha) 
 #print (gitHubResponse)
 print("Changing file content...")
-#check file content after change
+
+'''#check file content after change # only shows chnaged file at second run.
 response = requests.get(urlOfFile) 
 ChangedFile = response.text
-print("updated content: \n",ChangedFile)
-
-# I have to run the script twice to see the change 🤷‍♀️
+print("updated content: \n",ChangedFile)'''
