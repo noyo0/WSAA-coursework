@@ -45,6 +45,21 @@ def createtable():
 # Execute the SQL statement to create the table
     mycursor.execute(sql)
 
+def createStudent(values):
+    #connect to the specific database
+    mydb = mysql.connector.connect(
+    host="localhost",     # MySQL server hostname
+    user="root",          # MySQL username
+    password="root",          # MySQL password
+    database="wsaa"       # Name of the database to use
+)
+    mycursor = mydb.cursor() #this is a new cursor, could work in tandem with the other one
+# SQL statement to create a table named 'student'
+    sql = "INSERT INTO student (`name`, `age`) VALUES (%s, %s)"
+# Execute the SQL statement to create the table
+    mycursor.execute(sql)
+    mydb.commit()
+
 def runSQLinwsaa(sql):
     #connect to the specific database
     mydb = mysql.connector.connect(
@@ -62,11 +77,29 @@ def runSQLinwsaa(sql):
     for o in output:
         print(o)
 
+def getOutput(sql): 
+        #connect to the specific database
+    mydb2 = mysql.connector.connect(
+    host="localhost",     # MySQL server hostname
+    user="root",          # MySQL username
+    password="root",          # MySQL password
+    database="wsaa"       # Name of the database to use
+)
+    mycursor = mydb2.cursor() #this is a new cursor, could work in tandem with the other one
+# Execute a query to select existing databases
+    mycursor.execute(sql)
+# Fetch all rows (databases) from the result set
+    databases = mycursor.fetchall()
+#Print results
+    print("output:")
+    for database in databases:
+        print(database)
 
-
-#test
+#test------------------------
 #printall()
-runSQLinwsaa("show create table student")
+#runSQLinwsaa("INSERT INTO student (`name`, `age`) VALUES ('bob', 25)")
+createStudent(("Darth",54))
+getOutput("select * from student")
 #createnewdb('wsaa')
 #printall()
 

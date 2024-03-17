@@ -1,22 +1,21 @@
 import mysql.connector
-
 class StudentDAO:
-    host = ""
+    host =""
     user = ""
-    password = ""
-    database = ""
+    password =""
+    database =""
+
     connection = ""
-    cursor = ""
+    cursor =""
 
-    def __init__(self):
-        # These values should ideally be read from a config file
-        self.host = "localhost"
-        self.user = "root"
-        self.password = "root"
-        self.database = "wsaa"
-
-    def getCursor(self):
-        # Establish a connection and return a cursor object
+    def __init__(self): 
+        #these should be read from a config file
+        self.host="localhost"
+        self.user="root"
+        self.password="root"
+        self.database="wsaa"
+    
+    def getCursor(self): 
         self.connection = mysql.connector.connect(
             host=self.host,
             user=self.user,
@@ -25,66 +24,77 @@ class StudentDAO:
         )
         self.cursor = self.connection.cursor()
         return self.cursor
-
+    
     def closeAll(self):
-        # Close the connection and cursor
         self.connection.close()
         self.cursor.close()
-
-    def create(self, values):
-        # Create a new record in the database
-        cursor = self.getCursor()
-        sql = "INSERT INTO student (name, age) VALUES (%s, %s)"
-        cursor.execute(sql, values)
-        self.connection.commit()
-        new_id = cursor.lastrowid
-        self.closeAll()
-        return new_id
-
+    
+    
     def getAll(self):
-        # Retrieve all records from the database
         cursor = self.getCursor()
-        sql = "SELECT * FROM student"
+        sql="select * from student"
         cursor.execute(sql)
         result = cursor.fetchall()
-        studentlist =[]
+        studentlist = []
         for row in result:
             studentlist.append(self.convertToDict(row))
+
         self.closeAll()
-        return result
+        return studentlist
 
     def findByID(self, id):
-        # Retrieve a record by its ID
         cursor = self.getCursor()
-        sql = "SELECT * FROM student WHERE id = %s"
-        cursor.execute(sql, (id,))
+        sql="select * from student where id = %s"
+        values = (id,)
+
+        cursor.execute(sql, values)
         result = cursor.fetchone()
         self.closeAll()
-        return result.convertToDict(result)
-
-    def update(self, values):
-        # Update a record in the database
+        return self.convertToDict(result)
+    
+    def create(self, student):
         cursor = self.getCursor()
-        sql = "UPDATE student SET name = %s, age = %s WHERE id = %s"
+        sql="insert into student (name, age) values (%s,%s)"
+        values = (student.get("name"), student.get("age"))
+        cursor.execute(sql, values )
+
+        self.connection.commit()
+        newid = cursor.lastrowid
+        student["id"] = newid
+        self.closeAll()
+        return student
+
+
+    def update(self, id,  student):
+        cursor = self.getCursor()
+        sql="update student set name= %s, age=%s  where id = %s"
+    
+        values = (student.get("name"), student.get("age"), id)
         cursor.execute(sql, values)
         self.connection.commit()
+        
         self.closeAll()
+        return student
 
     def delete(self, id):
-        # Delete a record from the database
         cursor = self.getCursor()
-        sql = "DELETE FROM student WHERE id = %s"
-        cursor.execute(sql, (id,))
+        sql="delete from student where id = %s"
+        values = (id,)
+
+        cursor.execute(sql, values)
+
         self.connection.commit()
-        self.closeAll()
+        self.closeAll
+        #print("delete done")
+        return True
 
     def convertToDict(self,resultLine):
-        studentKeys = ["id","name","age"]
-        currentkey=0
-        student={}
-        for attribute in resultLine:
-            student[studentKeys[currentkey]] = attribute
+        studentKeys = ["id", "name", "age"]
+        currentkey = 0
+        student = {}
+        for attrib in resultLine:
+            student[studentKeys[currentkey]] = attrib
+            currentkey = currentkey + 1 
         return student
-        
-# Create an instance of StudentDAO
+
 studentDAO = StudentDAO()
