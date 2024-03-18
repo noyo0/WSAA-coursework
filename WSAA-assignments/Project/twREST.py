@@ -1,5 +1,5 @@
 # create a very simple Flask server
-# API fuinctions (HTML method): Get All (GET), Find by ID (GET), Create transaction (POST), Update transaction (PUT), Delete transaction (DELETE)
+# API fuinctions (HTML method): Get All (GET), Find by ID (GET), Create Book (POST), Update Book (PUT), Delete Book (DELETE)
 
 from flask import Flask, request #import library and functions
 # Flask port is 5000 http://localhost:5000 or http://127.0.0.1:5000
@@ -9,7 +9,7 @@ app = Flask(__name__) #initialise Flask Application
 @app.route('/')
 # define index content
 def index():
-        return """<h1>Truckwash_SQL INDEX</h1><br>
+        return """<h1> ******  Truckwash_SQL INDEX ******* </h1><br>
         <h2>CONTENTS:</h2>
                 http://localhost:5000 - INDEX<br>
                 http://localhost:5000/transactions - All transactions<br>
@@ -25,7 +25,7 @@ def index():
                         "date":"01/03/24"<br>
                         }<br>
 <br>
-                (PUT)edit item:<br>
+                edit item:<br>
                 http://localhost:5000/transactions/1 - edit by ID<br>
                         JSON template<br>
                         {<br>
@@ -41,13 +41,13 @@ def index():
 def getall():
         return "Here you get all truckwash transactions"
 
-# Find transaction by ID: Define a route to handle GET requests for finding a transaction by its ID.
+# Find transaction by ID: Define a route to handle GET requests for finding a book by its ID.
 # cURL command: http://127.0.0.1:5000/transactions/1
 @app.route('/transactions/<int:id>', methods=['GET']) #GET reads
 def findbyid(id):
         return "Here you can find a particular transaction by ID"
 
-# Create transaction: Define a route to handle POST requests for creating a new transaction entry.
+# Create transaction: Define a route to handle POST requests for creating a new book entry.
 # cURL command: -X POST -d 
 # JSON template to send {"Fleet number":"PF123", "type":"truck", "price":123, "date":"01/03/24"}
 # address http://127.0.0.1:5000/transactions
@@ -64,7 +64,7 @@ def update(id):
         jsonstring = request.json
         return f"update {id} {jsonstring}"
 
-# Delete transaction: Define a route to handle DELETE requests for deleting a transaction by its ID.
+# Delete Book: Define a route to handle DELETE requests for deleting a book by its ID.
 # cURL command: -X DELETE  http://127.0.0.1:5000/transactions/1
 @app.route('/transactions/<int:id>', methods=['DELETE']) #DELETE
 def delete(id):
