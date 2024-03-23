@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <title>js to write DOM (Document Object Model)</title>
+    </head>
+    <body>
+        Write into the DOM tree <br>
+        On click of a button, output the html cell elements from a table <br><br>
+        <table id="mainTable">
+            <tr>
+                <td>data1 blah</td>
+                <td>data2 bla-blah</td>
+                <td><button onclick="readRow(this)">output</button></td>
+            </tr>
+        </table>
+        <button onclick="createRow()">create Row</button>
+        <!--read & write HTML DOM tree-->
+        <script>
+            function readRow(buttonElement){
+                var rowElement = buttonElement.parentNode.parentNode
+                var data={}
+                data.cell1 = rowElement.cells[0].firstChild.textContent;
+                data.cell2 = rowElement.cells[1].firstChild.textContent;
+                
+                console.log(JSON.stringify(data))
+            }
+            function createRow(){
+                var tableElement = document.getElementById('mainTable')
+                var data = {cell1:'hi!', cell2:'bye!', cell3:'thanks for all the fish'}
+
+                var rowElement = tableElement.insertRow(-1)
+                var cellElement = rowElement.insertCell(0)
+                cellElement.innerHTML = data.cell1;
+                cellElement = rowElement.insertCell(1)
+                cellElement.innerHTML = data.cell2;
+                cellElement = rowElement.insertCell(2)
+                cellElement.innerHTML = data.cell3;
+            }
+        </script>
+    </body>
+</html>

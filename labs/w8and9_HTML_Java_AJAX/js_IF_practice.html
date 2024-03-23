@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <title>JS IF practice</title>
+        <body>
+            <input type="number" onchange="checkNumber(this)"/>
+            <br/>
+        </div>
+        <div id="output">
+            output here
+        </div>
+            <div id="div2" style="background-color: rgb(88, 227, 123)">
+                <br/>too low <br/>
+            </div>
+            <div id="div1" style="background-color: rgb(185, 31, 43)">
+                <br/>too high <br/>
+            <script>
+                function checkNumber(inputElement){
+                    var value = inputElement.value
+                    if (value <10)
+                    {document.getElementById("output").innerText ="too low"
+                    document.getElementById("div1").style.display ="none";
+                    document.getElementById("div2").style.display ="inline-block";}
+                    else if (value >10)
+                    {document.getElementById("output").innerText ="too high"
+                    document.getElementById("div2").style.display ="none";
+                    document.getElementById("div1").style.display ="inline-block";}
+                    else{document.getElementById("output").innerText ="just fine"
+                    document.getElementById("div1").style.display ="inline-block";
+                    document.getElementById("div2").style.display ="inline-block";
+                    }
+                }
+            </script>
+
+        </body>
+    </head>
+</html>

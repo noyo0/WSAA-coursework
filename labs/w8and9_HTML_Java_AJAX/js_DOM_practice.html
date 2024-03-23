@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>js DOM (Document Object Model)</title>
+    </head>
+    <body>
+        This is to store stuff <br><br>
+        <div id="myForm">
+            First name: <input type="text" name='firstName'/><br/>
+            Last name: <input type="text" name='lastName'/><br/>
+            Age: <input type="number" name='age'/><br/>
+            <button onclick="doForm()">Store</button>
+        </div>
+
+        <script>
+            function doForm(){
+                var employee ={}
+                var form =document.getElementById("myForm")
+                employee.firstName = form.querySelector('input[name="firstName"').value
+                employee.lastName = form.querySelector('input[name="lastName"').value
+                employee.age = form.querySelector('input[name="age"').value
+                console.log("Form data is "+JSON.stringify(employee))
+            }
+            
+        </script>
+    </body>
+</html>
