@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html> 
+    <head> 
+        <!-- CSS only from bootstrap.com--> 
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" 
+        rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" 
+        crossorigin="anonymous"> 
+        <!-- The title of the HTML page -->
+        <title>View books</title> 
+    </head> 
+    <body> 
+        <!-- Heading to display "Books" -->
+        <h1>Books</h1>
+        <!-- Button to create a new book -->
+        <div><button>Create</button></div>
+        <div> 
+            <!-- Table to display book details -->
+            <table class="table">
+                <tr>
+                    <!-- Table headers -->
+                    <th>id</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Price</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                </tr>
+                <!-- Rows representing individual books -->
+                <tr>
+                    <!-- Individual book details -->
+                    <td>1</td>
+                    <td>Harry Potter does something</td>
+                    <td>JK Rowling</td>
+                    <td>12</td>
+                    <td><button>update</button></td>                     
+                    <td><button>delete</button></td>
+                </tr>
+                <!-- Additional book entries -->
+                <tr>
+                    <td>2</td>
+                    <td>Harry Potter and something</td>
+                    <td>JK Rowling</td>
+                    <td>21</td>
+                    <td><button>update</button></td>                     
+                    <td><button>delete</button></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Harry Potter and somebody's something</td>
+                    <td>JK Rowling</td>
+                    <td>112</td>
+                    <td><button>update</button></td>                     
+                    <td><button>delete</button></td>
+                </tr>
+            </table> 
+        </div>
+        <div>
+            <!-- function to hide the "create a book" form-->
+            <div id='createUpdateForm' style="display: none"> 
+            <!-- make the "create a book" form to add a new books -->
+            <h2> <span>Create a</span>  <span style="display:none">Update this</span> Book </h2> 
+            <br>
+            id <input type="text" name="id"><br/>
+            Title <input type="text" name="title"><br/>
+            Author <input type="text" name="author"><br/>
+            Price <input type="number" name="price"><br/>
+            Just to show select <select name="status">
+                <!-- Select menu options -->
+                <option value="instock">in stock</option>
+                <option value="outstock">out of stock</option>
+                <option value="other">out of print</option>
+            </select><br/> 
+        </div>
+        <br>
+        <!-- Button to create a new book -->
+        <input id="name" type="text" value="Enter name here" input/>
+        <div id="output">output will go here</div>
+        <span><button onclick="buttonClicked()">Create</button></span>
+        <script>
+            function buttonClicked() {
+                var output=document.getElementById('name').value
+                document.getElementById("output").innerText = output
+            }
+            </script>
+        <!-- Button to update an existing book (initially hidden) -->
+        <span><button style="display:none">Update</button></span>         
+    </body> 
+</html> 
