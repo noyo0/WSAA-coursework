@@ -34,9 +34,15 @@ class DAO:
     
 # commands
 # Menu 1 - CitiesByCountry
-    def CitiesByCountry_(self, sql_query):
+    def CitiesByCountry_(self, country):
         cursor = self.getCursor()
-        cursor.execute(sql_query)
+        cursor.execute(f'''select country.Name as Country, city.Name as City,
+                                             city.District as District, city.Population as Population 
+                                             from city 
+                                             inner join country on city.CountryCode = country.code
+                                  where country.Name like "%{country}%";
+                                             ''')
+        #cursor.execute(sql_query)
         result = cursor.fetchall()
         resultlist = []
         for row in result:
@@ -55,17 +61,19 @@ class DAO:
         return result
     
 # Menu 2 - UpdateCity
-    def ReadCity_(self, sql_query):
+    #read from SQL
+    def ReadCity_(self, ID):
         cursor = self.getCursor()
-        cursor.execute(sql_query)
+        cursor.execute(f'''select ID, Name, CountryCode, Population, latitude, longitude
+                                  from city
+                                  where ID={ID};''')
         result = cursor.fetchall()
         resultlist = []
         for row in result:
             resultlist.append(self.convDict_Readcity(row))
         self.closeAll()
         return resultlist
-
-
+    # format output
     def convDict_Readcity(self,resultLine):
         CityKeys = [
         "ID", "Name", "CountryCode", "Population", "latitude", "longitude"
@@ -76,10 +84,38 @@ class DAO:
             result[CityKeys[currentkey]] = attrib
             currentkey = currentkey + 1 
         return result
-
-    def UpdateCity_(self, sql_query):
+    # update
+    def UpdateCity_(self, amount, countryID):
         cursor = self.getCursor()
-        cursor.execute(sql_query)
-        self.connection.commit()    
+        cursor.execute(f'''UPDATE city SET Population = Population + {amount} WHERE ID = {countryID};''')
+        self.connection.commit()
+        self.closeAll()    
+
+# Menu 3 - Add Person
+    def createPerson_(self, personID, personname, age, salary, city):
+        try:
+            cursor = self.getCursor()
+            cursor.execute(f'''INSERT INTO person (personID, personname, age, salary, city)
+                            VALUES {personID, personname, age, salary, city};''')
+            self.connection.commit()
+        except Exception as e:
+            #print("Error:", e)  # Print the error message
+            raise e  # Re-raise the exception
+        finally:
+            print("Person Added: ID:", personID,"| Name:",personname,"| Age: ",age,"| Salary:",salary,"| CityID:",city)
+            self.closeAll()
+
+
+    def delPerson_(self,personID):
+        try:
+            cursor = self.getCursor()
+            cursor.execute(f"DELETE FROM person WHERE personID = {personID}")
+            self.connection.commit()
+        except Exception as e:
+            #print("Error:", e)  # Print the error message
+            raise e  # Re-raise the exception
+        finally:
+            print(f"Person ID {personID} Deleted:")
+            self.closeAll()
 
 DAO = DAO()
