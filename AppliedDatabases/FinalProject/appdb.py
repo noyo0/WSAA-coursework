@@ -8,11 +8,11 @@ import pandas as pd
 def m02():
     while True:
         ID = input("\nEnter City ID:\n")
-        if not ID.isdigit():
+        if ID.lower() == "x":
+            main()
+        elif not ID.isdigit():
             print("Invalid input. Please enter a number. Or 'X' to exit.")
             m02()
-        elif ID.lower() == "x":
-            main()
         else:
             m02_UpdateCities(ID)
     
@@ -95,10 +95,20 @@ def m02_UpdateCities(ID):
     
     if IorD.lower() == "i":
         act="Increased"
-        amount = int(input("Enter Population Increase: "))
+        try:
+            amount = int(input("Enter Population Increase: "))
+        except ValueError:
+            print("Entry must be a number. No change was made")
+            amount=0
+            m02()
     elif IorD.lower() == "d":
         act="Decreased"
-        amount = -int(input("Enter Population Decrease: "))
+        try:
+            amount = -int(input("Enter Population Decrease: "))
+        except ValueError:
+            print("Entry must be a number. No change was made")
+            amount=0
+            m02()
     elif IorD.lower() == "x":
         main()
     else:
