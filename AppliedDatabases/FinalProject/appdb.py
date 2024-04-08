@@ -138,6 +138,7 @@ def m03_num(txt):# Menu3 error handling
             
 def m03_AddPerson():
     # personID, personname, age, salary, city
+    print("\nAdd a person...")
     personID=m03_num("ID: ")#int(input("ID: "))
     personname=input("Name: ")
     age=int(m03_num("Age: "))
@@ -149,6 +150,9 @@ def m03_AddPerson():
     except Exception as e:
         if "Duplicate entry" in str(e):
             print(f"\nDuplicate entry error: This person ID: {personID} already exists.\nReturning to MAIN MENU...")
+            main()
+        elif "foreign key constraint fails" in str(e):
+            print(f"\nThe city ID: {city} does not exist.\nReturning to MAIN MENU...")
             main()
         elif "Out of range" in str(e):
             print("\nOut of range error: The city ID is out of range.\nReturning to MAIN MENU...")
