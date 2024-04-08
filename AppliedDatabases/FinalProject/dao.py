@@ -33,6 +33,7 @@ class DAO:
         self.cursor.close()
     
 # commands
+# Menu 1 - CitiesByCountry
     def CitiesByCountry_(self, sql_query):
         cursor = self.getCursor()
         cursor.execute(sql_query)
@@ -42,8 +43,6 @@ class DAO:
             resultlist.append(self.convDict_city(row))
         self.closeAll()
         return resultlist
-
-
     def convDict_city(self,resultLine):
         CityKeys = [
         "Country", "City", "District", "Population"
@@ -55,5 +54,32 @@ class DAO:
             currentkey = currentkey + 1 
         return result
     
+# Menu 2 - UpdateCity
+    def ReadCity_(self, sql_query):
+        cursor = self.getCursor()
+        cursor.execute(sql_query)
+        result = cursor.fetchall()
+        resultlist = []
+        for row in result:
+            resultlist.append(self.convDict_Readcity(row))
+        self.closeAll()
+        return resultlist
+
+
+    def convDict_Readcity(self,resultLine):
+        CityKeys = [
+        "ID", "Name", "CountryCode", "Population", "latitude", "longitude"
+    ]
+        currentkey = 0
+        result = {}
+        for attrib in resultLine:
+            result[CityKeys[currentkey]] = attrib
+            currentkey = currentkey + 1 
+        return result
+
+    def UpdateCity_(self, sql_query):
+        cursor = self.getCursor()
+        cursor.execute(sql_query)
+        self.connection.commit()    
 
 DAO = DAO()
