@@ -94,7 +94,7 @@ def m02_UpdateCities(ID):
         print("\n")
         print("".join(formatted_rows))
     else:
-        print("No data found for the given ID.")
+        print("(!) No data found for the given City ID.")
         m02()
 # increase/decrease & set amount
     IorD = input("\n[I]ncrease/[D]ecrease Population: ")
@@ -106,7 +106,7 @@ def m02_UpdateCities(ID):
         try:
             amount = int(input("Enter Population Increase: "))
         except ValueError:
-            print("Entry must be a number. No change was made")
+            print("(!) Entry must be a number. No change was made")
             amount=0
             m02()
     elif IorD.lower() == "d":
@@ -114,13 +114,13 @@ def m02_UpdateCities(ID):
         try:
             amount = -int(input("Enter Population Decrease: "))
         except ValueError:
-            print("Entry must be a number. No change was made")
+            print("(!) Entry must be a number. No change was made")
             amount=0
             m02()
     elif IorD.lower() == "x":
         main()
     else:
-        print("Invalid input. Please enter 'I' or 'D' (or X for exit)")
+        print("(!) Invalid input. Please enter 'I' or 'D' (or X for exit)")
         m02_UpdateCities(ID)
 
 # Update the population as per above
@@ -161,16 +161,21 @@ def m03_AddPerson():
             print("\nUnhandled exception:\n", e,"\nReturning to MAIN MENU...")
             main()
 
+
+
 def m04_DeletePerson():
     personID=m03_num("Enter ID of Person to Delete :")
     try:
         DAO.delPerson_(personID)
     except Exception as e:
         if "Out of range" in str(e):
-            print("\nOut of range error: The Person ID is out of range.\nReturning to MAIN MENU...")
+            print("\n(!) Out of range error: The Person ID is out of range.\nReturning to MAIN MENU...")
+            main()
+        elif "foreign key constraint fails" in str(e):
+            print(f"\n(!) Can't delete Person ID: {personID}. He/She has visited cities. \nReturning to MAIN MENU...")
             main()
         else:
-            print("\nUnhandled exception:\n", e,"\nReturning to MAIN MENU...")
+            print("\n(!) Unhandled exception:\n", e,"\nReturning to MAIN MENU...")
             main()
 
 
