@@ -1,9 +1,9 @@
-# Data Access Object (DAO) for # • MySQL appdbproj. # • Neo4j Download appDBCity_Neo4j.txt
+# Data Access Object (DAO) for Applied Databases Final Project 2024 
+# Data sources: • MySQL appdbproj. # • Neo4j Download appDBCity_Neo4j.txt
 
 # ------------- test presence / install mySQL-connector module ------------------ #https://stackoverflow.com/questions/6120902/how-do-i-automatically-install-missing-python-modules
 import traceback
 import os
-import sys
 
 try: 
     import mysql.connector
@@ -25,7 +25,6 @@ except AttributeError as e:
     os.system('python -m pip install mysql-connector-python')
     exit()
 #------------------------------------------------------------------------------
-
 
 import mysql.connector
 from config import config_mysql as cfg
@@ -63,13 +62,11 @@ class DAO:
 # Menu 1 - CitiesByCountry
     def CitiesByCountry_(self, country):
         cursor = self.getCursor()
-        cursor.execute(f'''select country.Name as Country, city.Name as City,
+        cursor.execute('''select country.Name as Country, city.Name as City,
                                              city.District as District, city.Population as Population 
                                              from city 
                                              inner join country on city.CountryCode = country.code
-                                  where country.Name like "%{country}%";
-                                             ''')
-        #cursor.execute(sql_query)
+                                  where country.Name like %s''',(f'%{country}%',))
         result = cursor.fetchall()
         resultlist = []
         for row in result:
@@ -134,7 +131,7 @@ class DAO:
             print("Person Added: ID:", personID,"| Name:",personname,"| Age: ",age,"| Salary:",salary,"| CityID:",city)
             self.closeAll()
 
-
+# Menu 4 - Delete person if not visited city
     def delPerson_(self,personID):
         try:
             cursor = self.getCursor()
@@ -145,9 +142,31 @@ class DAO:
                 self.connection.commit()
                 print(f"\nPerson ID {personID} deleted.")
         except Exception as e:
-            #print("Error:", e)  # Print the error message
+            print("Error:", e)  # Print the error message
             raise e  # Re-raise the exception
         finally:
             self.closeAll()
-
+# Menu 5 - Countries by population
+    def CountriesbyPop_(self, usrchoice, pop):
+        pop=int(pop)
+        cursor = self.getCursor()
+        cursor.execute(f'''select Code, Name, Continent, Population from country 
+                            where Population {usrchoice}{pop};''')#,(usrchoice, pop))
+        result = cursor.fetchall()
+        resultlist = []
+        for row in result:
+            resultlist.append(self.convDict_ReadCountbyPop(row))
+        self.closeAll()
+        return resultlist
+    
+    def convDict_ReadCountbyPop(self,resultLine):
+        CountKeys = [
+        "Code", "Name", "Continent", "Population"]
+        currentkey = 0
+        result = {}
+        for attrib in resultLine:
+            result[CountKeys[currentkey]] = attrib
+            currentkey = currentkey + 1 
+        return result
+    
 DAO = DAO()

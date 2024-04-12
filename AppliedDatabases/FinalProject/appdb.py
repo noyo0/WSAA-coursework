@@ -1,5 +1,6 @@
-# Final Project
-# SQL interactions are through dao.py DAO
+# Applied Databases Final Project 2024
+# Author: Norbert Antal
+# 2024
 
 
 from dao import DAO
@@ -7,7 +8,7 @@ import pandas as pd
 
 #Menu - selector
 def main():
-    #display_menu()
+    #display_menu() # didn't work properly, functions moved to main()
     while True:
         print("")
         print("=" *36)
@@ -31,7 +32,9 @@ def main():
             m03_AddPerson()
         elif choice == "4": # delete person
             m04_DeletePerson()
-        elif choice == "x":
+        elif choice == "5": # view countries by population
+            m05_countryPop()
+        elif choice == "x": # quit
             doQuit()
         else:
             display_menu()
@@ -41,40 +44,29 @@ def m01_ViewCities(country):
 # • Country Name • City Name • City District • City Population # in groups of 2
 # If the user presses any key except q the details of the next 2 cities in that country/those countries are shown. 
 # Pressing q returns to the Main Menu. 
-    result = DAO.CitiesByCountry_(country)
-    df=pd.DataFrame(result)
+    result = DAO.CitiesByCountry_(country) # run SQL script in DAO and store result
+    df=pd.DataFrame(result) #convert to dataframe
     if not df.empty:
         n=0
         while n<len(df):
-            #print(df.iloc[n:n+2].to_string(index=False, header=False) # simple output
-            # FORMATTING - - print output formatted with | dividers and fixed width
-            formatted_rows = df.iloc[n:n+2].apply(
-                lambda row: ' | '.join(
-                    f"{val:<15}" for val in row  # set column width at val:
+            formatted_rows = df.iloc[n:n+2].apply( # display only 2 rows
+                lambda x: ' | '.join( # add | between columns (https://www.reddit.com/r/learnpython/comments/nnuzoe/pandas_df_how_to_add_thousand_separators_to_a/)
+                    f"{val:<15}" for val in x  # set column width 
                 ),
                 axis=1
             )
             print('\n'.join(formatted_rows))
-            uinp=input("-- Quit (q) --")
+            uinp=input("-- Quit (q) --") # check for q input and quit
             if uinp=="q":
                 main()
                 break
             else:
-                n=n+2
+                n=n+2 # otherwise set .iloc to next 2 rows
     else:
-        print("No data found for the given ID.")
+        print(f"No matches found for >{country}<. Please enter a valid country name (or part thereof).") # handle invalid country name
         main()
+
 #Menu02 - Update City population ---------------------------------------------------------------------------
-def m02():# Menu2 error handling
-    while True:
-        ID = input("\nEnter City ID:\n")
-        if ID.lower() == "x":
-            main()
-        elif not ID.isdigit():
-            print("Invalid input. Please enter a number. Or 'X' to exit.")
-            m02()
-        else:
-            m02_UpdateCities(ID)
 def m02_UpdateCities(ID):
 # The user is asked to enter a City ID: 
 # When a valid City ID is entered the following details of the city are shown: 
@@ -82,19 +74,19 @@ def m02_UpdateCities(ID):
 # The user is then asked whether he/she wishes to Increase or Decrease the City’s Population, and by how much.
 
 # read city by given ID
-    result = DAO.ReadCity_(ID)
-    df=pd.DataFrame(result)
+    result = DAO.ReadCity_(ID) #run SQL script and store result
+    df=pd.DataFrame(result) # convert result to dataframe
     if not df.empty:
-        formatted_rows = df.apply(
-            lambda row: ' | '.join(
-                f"{val if val is not None else 'None':<15}" for val in row
+        formatted_rows = df.apply( # format output with | dividers + set column width
+            lambda x: ' | '.join(
+                f"{val if val is not None else 'None':<1}" for val in x # print 'None' if the value is None (otherwise unsupported format error)
             ),
             axis=1
         )
-        print("\n")
-        print("".join(formatted_rows))
+        #print("\n")
+        print("\n".join(formatted_rows)) # ommit index column
     else:
-        print("(!) No data found for the given City ID.")
+        print(f"\n(!) No data found for the given City ID: {ID}.") # wrong ID handling
         m02()
 # increase/decrease & set amount
     IorD = input("\n[I]ncrease/[D]ecrease Population: ")
@@ -106,7 +98,7 @@ def m02_UpdateCities(ID):
         try:
             amount = int(input("Enter Population Increase: "))
         except ValueError:
-            print("(!) Entry must be a number. No change was made")
+            print("(!) Entry must be a number. No change was made") # error handling - invalid popultaion entry
             amount=0
             m02()
     elif IorD.lower() == "d":
@@ -114,28 +106,37 @@ def m02_UpdateCities(ID):
         try:
             amount = -int(input("Enter Population Decrease: "))
         except ValueError:
-            print("(!) Entry must be a number. No change was made")
+            print("(!) Entry must be a number. No change was made") # error handling - invalid popultaion entry
             amount=0
             m02()
-    elif IorD.lower() == "x":
+    elif IorD.lower() == "x": # exit option
         main()
     else:
-        print("(!) Invalid input. Please enter 'I' or 'D' (or X for exit)")
+        print("(!) Invalid input. Please enter 'I' or 'D' (or X for exit)") # I/D error handling
         m02_UpdateCities(ID)
 
-# Update the population as per above
-    DAO.UpdateCity_(amount, countryID)
+    DAO.UpdateCity_(amount, countryID) # run SQL to update the population as per above
     print(f'\nPopulation for (ID: {df["ID"].iloc[0]}) "{df["Name"].iloc[0]}" {act} by {amount}')
     main()
+
+def m02():# Menu2 - city ID entry + error handling
+    while True:
+        ID = input("\nEnter City ID: ")
+        if ID.lower() == "x":
+            main()
+        elif not ID.isdigit():
+            print("Invalid input. Please enter a number. Or 'X' to exit.")
+            m02()
+        else:
+            m02_UpdateCities(ID)
 #Menu3 - Add Person --------------------------------------------
-def m03_num(txt):# Menu3 error handling
+def m03_num(txt):# Menu3 error handling - numeric entry only
         try:
             entry = int(input(f"{txt}"))
             return(entry)
         except ValueError:
             print("Entry must be a number.")
-            return m03_num(txt)
-            
+            return m03_num(txt)   
 def m03_AddPerson():
     # personID, personname, age, salary, city
     print("\nAdd a person...")
@@ -160,10 +161,10 @@ def m03_AddPerson():
         else:
             print("\nUnhandled exception:\n", e,"\nReturning to MAIN MENU...")
             main()
-
-
-
+# Menu4 Delete Person if not visited cities
 def m04_DeletePerson():
+    #The user is asked to enter the ID of the person to be deleted. 
+    #ERROR CONDITIONS: If the person with the specified ID has visited cities, he/she should not be deleted from the database, and the user should be returned to the main menu. 
     personID=m03_num("Enter ID of Person to Delete :")
     try:
         DAO.delPerson_(personID)
@@ -171,13 +172,45 @@ def m04_DeletePerson():
         if "Out of range" in str(e):
             print("\n(!) Out of range error: The Person ID is out of range.\nReturning to MAIN MENU...")
             main()
-        elif "foreign key constraint fails" in str(e):
+        elif "foreign key constraint fails" in str(e): #ON DELETE CASCADE is not specified in either of the sql tables (person and hasvisitedcity), default is RESTRICT, resulting error below which can be used as trigger.
+                                                       #Error: 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`appdbproj`.`hasvisitedcity`, CONSTRAINT `fk_personid` FOREIGN KEY (`personID`) REFERENCES `person` (`personID`))
             print(f"\n(!) Can't delete Person ID: {personID}. He/She has visited cities. \nReturning to MAIN MENU...")
             main()
         else:
             print("\n(!) Unhandled exception:\n", e,"\nReturning to MAIN MENU...")
             main()
-
+# Menu 5 - View Countries by population
+# The user is asked to enter <, > or =, followed by a population. For any country whose population is <, > or = (as appropriate) the population entered by the user, 
+# the following information is shown: • Code • Name • Continent • Population 
+# Error Conditions The user is continually prompted for one of the valid comparison operators, <, > or =, until a valid one is entered. 
+def m05_countryPop():
+    print("Countries by Population")
+    print("-" * 10)
+    result=""
+    pop=0
+    usrchoice = input("\nEnter <, > or = : ")
+    if usrchoice.lower() in ("<", ">", "="):
+        try:
+            pop = int(input("Enter Population: "))
+            result = DAO.CountriesbyPop_(usrchoice, pop)
+        except ValueError:
+            print("(!) Population entry must be a number.")
+            m05_countryPop()  # Call the function again for retry
+        pop = 0  # Set pop to 0 as a default after error
+    elif usrchoice.lower() == "x":
+        main()
+    else:
+        print("(!) Invalid input. Please enter <, > or = (or X for exit)")
+        m05_countryPop()  # Call the function again for retry
+    df = pd.DataFrame(result)
+    if not df.empty:  # Check if result is not empty
+        formatted_rows = df.apply(lambda x: ' | '.join(
+        f"{val:<10}" for val in x  # Set column width at val:
+        ), axis=1)
+        print('\n'.join(formatted_rows)) # removes index column
+    else:
+        print(f"No matches found for ( {usrchoice}{pop} )range.")
+        main()
 
 #display menu-------
 def display_menu():
