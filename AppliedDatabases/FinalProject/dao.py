@@ -4,6 +4,7 @@
 # ------------- test presence / install mySQL-connector module ------------------ #https://stackoverflow.com/questions/6120902/how-do-i-automatically-install-missing-python-modules
 import traceback
 import os
+import neo4j
 
 try: 
     import mysql.connector
@@ -25,9 +26,30 @@ except AttributeError as e:
     os.system('python -m pip install mysql-connector-python')
     exit()
 #------------------------------------------------------------------------------
+try: 
+    import neo4j
+    if not hasattr(mysql.connector, 'connect'):
+        raise AttributeError("Attribute 'connect' not found in neo4j")
+except ImportError:
+    print("Required module missing: neo4j\n")
+    traceback.print_exc()
+except AttributeError as e:
+    print("""
+    .
+    .
+    Required module missing: neo4j\n""")
+    print("""...Installing missing module now... 
+    
+    Please restart the program after installation finished
+    
+    """)
+    os.system('python -m pip install neo4j')
+    exit()
+#------------------------------------------------------------------------------
 
 import mysql.connector
 from config import config_mysql as cfg
+from neo4j import GraphDatabase
 
 class DAO:
     host =""
@@ -169,4 +191,25 @@ class DAO:
             currentkey = currentkey + 1 
         return result
     
+# Menu 6 Neo4j - 
+    def neo4j_twinned_(self):
+        
+        # Connect to the Neo4j database
+        uri = "neo4j+s://fdf8e32f.databases.neo4j.io"
+        driver = GraphDatabase.driver(uri, auth=("neo4j", "0K9KDPJ-dY3E3QAZ1HhGNX0rSIH1VPxPPxXIEl2Sj7o"))
+
+        # Run a query
+        with driver.session() as session:
+            result = session.run("match(c)-[]-(c2) return c.name, c2.name order by c.name")
+            
+                # Fetch all results into a list of dictionaries
+            records = [dict(record) for record in result]
+        
+        '''for record in records:
+            print(record)'''
+
+            # Close the driver
+        driver.close()
+        return(records)
+
 DAO = DAO()

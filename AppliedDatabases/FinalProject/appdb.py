@@ -34,6 +34,8 @@ def main():
             m04_DeletePerson()
         elif choice == "5": # view countries by population
             m05_countryPop()
+        elif choice == "6": # view countries by population
+            m06_twinned()
         elif choice == "x": # quit
             doQuit()
         else:
@@ -183,34 +185,84 @@ def m04_DeletePerson():
 # The user is asked to enter <, > or =, followed by a population. For any country whose population is <, > or = (as appropriate) the population entered by the user, 
 # the following information is shown: • Code • Name • Continent • Population 
 # Error Conditions The user is continually prompted for one of the valid comparison operators, <, > or =, until a valid one is entered. 
-def m05_countryPop():
-    print("Countries by Population")
-    print("-" * 10)
-    result=""
-    pop=0
-    usrchoice = input("\nEnter <, > or = : ")
-    if usrchoice.lower() in ("<", ">", "="):
-        try:
-            pop = int(input("Enter Population: "))
-            result = DAO.CountriesbyPop_(usrchoice, pop)
-        except ValueError:
-            print("(!) Population entry must be a number.")
+def m05_countryPop________():
+    while True:
+        print("\nCountries by Population")
+        print("-" * 10)
+        result=""
+        pop=0
+        df=None
+        usrchoice = input("\nEnter <, > or = : ")
+        if usrchoice.lower() in ("<", ">", "="):
+            try:
+                pop = int(input("Enter Population: "))
+                result = DAO.CountriesbyPop_(usrchoice, pop)
+                df = pd.DataFrame(result)
+            except ValueError:
+                print("(!) Population entry must be a number.")
+                m05_countryPop()  # Call the function again for retry
+            pop = 0  # Set pop to 0 as a default after error
+        elif usrchoice.lower() == "x":
+            main()
+        else:
+            print(f"(!) Invalid input: {usrchoice}. Please enter <, > or = (or X for exit)")
             m05_countryPop()  # Call the function again for retry
-        pop = 0  # Set pop to 0 as a default after error
-    elif usrchoice.lower() == "x":
-        main()
-    else:
-        print("(!) Invalid input. Please enter <, > or = (or X for exit)")
-        m05_countryPop()  # Call the function again for retry
-    df = pd.DataFrame(result)
-    if not df.empty:  # Check if result is not empty
-        formatted_rows = df.apply(lambda x: ' | '.join(
-        f"{val:<10}" for val in x  # Set column width at val:
-        ), axis=1)
-        print('\n'.join(formatted_rows)) # removes index column
-    else:
-        print(f"No matches found for ( {usrchoice}{pop} )range.")
-        main()
+
+        if df is not None and not df.empty:  # Check if result is not empty
+            formatted_rows = df.apply(lambda x: ' | '.join(
+            f"{val:<10}" for val in x  # Set column width at val:
+            ), axis=1)
+            print('\n'.join(formatted_rows)) # removes index column
+        else:
+            print(f"No matches found for ( {usrchoice}{pop} )range.")
+            main()
+
+
+def m05_countryPop():
+    while True:
+        print("\nCountries by Population")
+        print("-" * 10)
+        result = ""
+        pop = 0
+        df = None
+        usrchoice = input("\nEnter <, > or = : ")
+        if usrchoice.lower() in ("<", ">", "="):
+            try:
+                pop = int(input("Enter Population: "))
+                result = DAO.CountriesbyPop_(usrchoice, pop)
+                df = pd.DataFrame(result)
+            except ValueError:
+                print("(!) Population entry must be a number.")
+                pop = 0  # Set pop to 0 after error
+                continue
+        elif usrchoice.lower() == "x":
+            main()
+        else:
+            print(f"(!) Invalid input: {usrchoice}. Please enter <, > or = (or X for exit)")
+            continue  # Continue to the beginning of the loop to retry
+
+        if df is not None and not df.empty:  # Check if result is not empty
+            formatted_rows = df.apply(lambda x: ' | '.join(
+                f"{val:<10}" for val in x  # Set column width at val:
+            ), axis=1)
+            print('\n'.join(formatted_rows))  # removes index column
+            main()
+        else:
+            print(f"No matches found for ( {usrchoice}{pop} ) range.")
+            main()
+            break  # Continue to the beginning of the loop to retry
+
+def m06_twinned():
+    print("\nTwinned Cities")
+    print("-"*14)
+    df=pd.DataFrame(DAO.neo4j_twinned_())
+    if df is not None and not df.empty:  # Check if result is not empty
+            formatted_rows = df.apply(lambda x: ' <->  '.join(
+                f"{val:<10}" for val in x  # Set column width at val:
+            ), axis=1)
+            print('\n'.join(formatted_rows))  # removes index column
+            main()
+    #print(df.to_string(index=False, header=False))
 
 #display menu-------
 def display_menu():
