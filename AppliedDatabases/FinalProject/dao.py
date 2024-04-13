@@ -47,9 +47,12 @@ except AttributeError as e:
     exit()
 #------------------------------------------------------------------------------
 
+
 import mysql.connector
-from config import config_mysql as cfg
 from neo4j import GraphDatabase
+from config import config_mysql as cfg
+from config import config_neo4j_online as neo
+
 
 class DAO:
     host =""
@@ -79,6 +82,11 @@ class DAO:
     def closeAll(self):
         self.connection.close()
         self.cursor.close()
+    
+    def neo4(self):
+        url = neo["host"]
+        driver = GraphDatabase.driver(url, auth=(neo["user"],neo["password"]))
+        return driver
     
 # commands
 # Menu 1 - CitiesByCountry
@@ -191,25 +199,37 @@ class DAO:
             currentkey = currentkey + 1 
         return result
     
-# Menu 6 Neo4j - 
+# Menu 6 Neo4j twinned cities- 
     def neo4j_twinned_(self):
-        
-        # Connect to the Neo4j database
-        uri = "neo4j+s://fdf8e32f.databases.neo4j.io"
-        driver = GraphDatabase.driver(uri, auth=("neo4j", "0K9KDPJ-dY3E3QAZ1HhGNX0rSIH1VPxPPxXIEl2Sj7o"))
-
-        # Run a query
+        driver=self.neo4()
         with driver.session() as session:
             result = session.run("match(c)-[]-(c2) return c.name, c2.name order by c.name")
-            
-                # Fetch all results into a list of dictionaries
+            #output
             records = [dict(record) for record in result]
-        
-        '''for record in records:
-            print(record)'''
-
             # Close the driver
         driver.close()
         return(records)
+
+# MEnu 7 twin city with Dublin
+    def TwinMe_(self,ID,city,x):
+        scr0='match(c:City{cid:%s})-[r]-({name:"Dublin"}) return c.name' %ID
+        scr1='match(c:City{cid:%s}) return c.cid' %ID
+        scr2='''MATCH (c:City {cid: %s})
+                MATCH (d:City {name: "Dublin"})
+                CREATE (c)-[:TWINNED_WITH]->(d)''' %ID
+        scr3='''CREATE (c:City {name: "%s", cid: %s})
+                WITH c
+                MATCH (d:City {name: "Dublin"})
+                CREATE (c)-[:TWINNED_WITH]->(d)''' %(city, ID)
+        scr=[scr0,scr1,scr2,scr3]
+        driver=self.neo4()
+        with driver.session() as session:
+            result = session.run(scr[x])
+            #output
+            records = [dict(record) for record in result]
+            # Close the driver
+        driver.close()
+        return(records)
+
 
 DAO = DAO()

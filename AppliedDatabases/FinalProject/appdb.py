@@ -34,8 +34,10 @@ def main():
             m04_DeletePerson()
         elif choice == "5": # view countries by population
             m05_countryPop()
-        elif choice == "6": # view countries by population
+        elif choice == "6": # view twinned cities
             m06_twinned()
+        elif choice == "7": # Twin with Dublin
+            m07()
         elif choice == "x": # quit
             doQuit()
         else:
@@ -185,38 +187,6 @@ def m04_DeletePerson():
 # The user is asked to enter <, > or =, followed by a population. For any country whose population is <, > or = (as appropriate) the population entered by the user, 
 # the following information is shown: • Code • Name • Continent • Population 
 # Error Conditions The user is continually prompted for one of the valid comparison operators, <, > or =, until a valid one is entered. 
-def m05_countryPop________():
-    while True:
-        print("\nCountries by Population")
-        print("-" * 10)
-        result=""
-        pop=0
-        df=None
-        usrchoice = input("\nEnter <, > or = : ")
-        if usrchoice.lower() in ("<", ">", "="):
-            try:
-                pop = int(input("Enter Population: "))
-                result = DAO.CountriesbyPop_(usrchoice, pop)
-                df = pd.DataFrame(result)
-            except ValueError:
-                print("(!) Population entry must be a number.")
-                m05_countryPop()  # Call the function again for retry
-            pop = 0  # Set pop to 0 as a default after error
-        elif usrchoice.lower() == "x":
-            main()
-        else:
-            print(f"(!) Invalid input: {usrchoice}. Please enter <, > or = (or X for exit)")
-            m05_countryPop()  # Call the function again for retry
-
-        if df is not None and not df.empty:  # Check if result is not empty
-            formatted_rows = df.apply(lambda x: ' | '.join(
-            f"{val:<10}" for val in x  # Set column width at val:
-            ), axis=1)
-            print('\n'.join(formatted_rows)) # removes index column
-        else:
-            print(f"No matches found for ( {usrchoice}{pop} )range.")
-            main()
-
 
 def m05_countryPop():
     while True:
@@ -263,6 +233,51 @@ def m06_twinned():
             print('\n'.join(formatted_rows))  # removes index column
             main()
     #print(df.to_string(index=False, header=False))
+
+def m07_twinMe(ID):
+#The user is asked to enter the ID of a city to be twinned with Dublin in the Neo4j database. 
+#Scenario 1 The city with the specified ID doesn’t already exist in the Neo4j database, so it is created (along with the TWINNED_WITH relationship). 
+#Scenario 2 The city with the specified ID already exists in the Neo4j database, so only the TWINNED_WITH relationship is created. 
+#Scenario 3 The city with the specified ID is already TWINNED_WITH Dublin, so nothing needs to be done. 
+
+# read city by given ID
+    result = DAO.ReadCity_(ID) #run SQL script and store result
+    df=pd.DataFrame(result) # convert result to dataframe
+    if not df.empty:
+        city=(df[["ID","Name"]].iloc[0,1])
+        print("(SQL) City with ID found: ", ID, city)
+        df=pd.DataFrame(DAO.TwinMe_(ID,city,0)) # '0' check if twinned with Dublin 'match(c:City{cid:%s})-[r]-({name:"Dublin"}) return c.name'
+        if not df.empty:
+            print(f"(Neo4j) This City {ID,city}, is twinned with Dublin")
+            main()
+        else:
+            #print(f"(Neo4j) This City {ID,cid}, is not yet twinned with Dublin")
+            df2=pd.DataFrame(DAO.TwinMe_(ID,city,1)) # '1' 'match(c:City{cid:%s}) return c.cid'
+            if not df2.empty:
+                print("(Neo4j) City with ID found:",df2.to_string(index=False,header=False),"is found on the Neo4j database")
+                print("Twinning...")
+                pd.DataFrame(DAO.TwinMe_(ID,city,2))
+                m07_twinMe(ID)
+            else:
+                print(f"(Neo4j) This city {ID, city} does not exists in the Neo4j database")
+                print("Creating city...")
+                pd.DataFrame(DAO.TwinMe_(ID,city,3))
+                m07_twinMe(ID)
+    else:
+        print(f"\n(!) Error: City ID {ID} doesn't exist in MySQL database.") # wrong ID handling
+        m07()
+
+def m07():# Menu2 - city ID entry + error handling
+    while True:
+        ID = input("\nEnter ID of a City to Twin with Dublin: ")
+        if ID.lower() == "x":
+            main()
+        elif not ID.isdigit():
+            print("Invalid input. Please enter a number. Or 'X' to exit.")
+            m07()
+        else:
+            m07_twinMe(ID)
+
 
 #display menu-------
 def display_menu():
