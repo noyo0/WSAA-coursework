@@ -155,10 +155,9 @@ class DAO:
                           VALUES (%s, %s, %s, %s, %s)''', (personID, personname, age, salary, city))
             self.connection.commit()
         except Exception as e:
-            #print("Error:", e)  # Print the error message
-            raise e  # Re-raise the exception
+            raise e  # store the exception
         finally:
-            print("Person Added: ID:", personID,"| Name:",personname,"| Age: ",age,"| Salary:",salary,"| CityID:",city)
+            print('Person details:', "ID:", personID,"| Name:",personname,"| Age: ",age,"| Salary:",salary,"| CityID:",city)
             self.closeAll()
 
 # Menu 4 - Delete person if not visited city
@@ -170,9 +169,9 @@ class DAO:
                 print(f"\n (!) Person ID {personID} not found. Nothing deleted.")
             else:
                 self.connection.commit()
-                print(f"\nPerson ID {personID} deleted.")
+                print(f"\nPerson ID: {personID} deleted.")
         except Exception as e:
-            print("Error:", e)  # Print the error message
+            #print("(!)Error:", e)  # Print the error message
             raise e  # Re-raise the exception
         finally:
             self.closeAll()
