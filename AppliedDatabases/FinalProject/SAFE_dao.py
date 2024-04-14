@@ -2,9 +2,10 @@
 # Author: Norbert Antal (G00425635@atu.ie)
 # Data sources: • MySQL appdbproj. # • Neo4j Download appDBCity_Neo4j.txt
 
-# ------------- test presence / install connector modules ------------------ #https://stackoverflow.com/questions/6120902/how-do-i-automatically-install-missing-python-modules
+# ------------- test presence / install mySQL-connector module ------------------ #https://stackoverflow.com/questions/6120902/how-do-i-automatically-install-missing-python-modules
 import traceback
 import os
+import neo4j
 
 try: 
     import mysql.connector
@@ -19,43 +20,31 @@ except AttributeError as e:
     .
     Required module missing: mysql.connector\n""")
     print("""...Installing missing module now... 
-       
+    
+    Please restart the program after installation finished
+    
     """)
     os.system('python -m pip install mysql-connector-python')
-    #restart
-    print("\n Mysql module installation finished, please restart the program")
     exit()
 #------------------------------------------------------------------------------
 try: 
     import neo4j
-    if not hasattr(neo4j, 'GraphDatabase'):
-        raise AttributeError("Attribute 'GraphDatabase' not found in neo4j")
-except ModuleNotFoundError:
-    print("""
-    .
-    Required module missing: neo4j\n
-          """)
-    print("""...Installing missing module now... 
-        
-    """)
-    os.system('python -m pip install neo4j')
-    #restart
-    print("\n Neo4J module installation finished, please restart the program")
-    exit()
+    if not hasattr(mysql.connector, 'connect'):
+        raise AttributeError("Attribute 'connect' not found in neo4j")
 except ImportError:
-    print("(!)Required module missing: neo4j\n")
+    print("Required module missing: neo4j\n")
     traceback.print_exc()
 except AttributeError as e:
     print("""
     .
     .
-    Required Attribute missing: neo4j\n""")
+    Required module missing: neo4j\n""")
     print("""...Installing missing module now... 
+    
+    Please restart the program after installation finished
     
     """)
     os.system('python -m pip install neo4j')
-    #restart
-    print("\n Neo4J module installation finished, please restart the program")
     exit()
 #------------------------------------------------------------------------------
 

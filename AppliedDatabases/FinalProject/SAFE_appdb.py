@@ -40,7 +40,8 @@ def main():
             m07()
         elif choice == "x": # quit
             doQuit()
-
+        else:
+            display_menu()
 #Menu01 - Read cities ----------------------------------------------------------------------------------        
 def m01_ViewCities(country):
 #The user enters a country name or part of it. User is then shown the following details of cities in that country/those countries: 
@@ -118,7 +119,7 @@ def m02_UpdateCities(ID):
         m02_UpdateCities(ID)# start from top with the stored ID
 
     DAO.UpdateCity_(amount, countryID) # run SQL in DAO to update the population as per above
-    print(f'\nPopulation for (ID: {df["ID"].iloc[0]}) "{df["Name"].iloc[0]}" {act} by {abs(amount)}')
+    print(f'\nPopulation for (ID: {df["ID"].iloc[0]}) "{df["Name"].iloc[0]}" {act} by {amount}')
     main()
 
 def m02():# Menu2 - city ID entry + error handling
@@ -307,5 +308,5 @@ def doQuit():
     exit()
 
 if __name__ == "__main__":
-	# execute only if run as a script
-    main()
+	# execute only if run as a script 
+	main()

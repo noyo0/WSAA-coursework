@@ -12,12 +12,18 @@ This project folder contains the following files and resources:
 
 ## Environment and Dependencies:
 The program was developed using Python version 3.9.18 within the Anaconda distribution. Additional Python modules used include:
-
-- **Pandas**: Version 2.0.3
+- **Pandas**: Version 2.0.3 *(part of Anaconda distribution)*
 - **mysql-connector-python**: Version 8.3.0 *(automatic installation for this module is included in the program)*
+- **neo4j**: Version 5.19.0 *(automatic installation for this module is included in the program)*
+
+## Module Installation scripts:
+*In case the required module is missing, and automatic installation fails, please install the missing module(s) manually;*
+- **mysql-connector-python**: pip install mysql-connector-python
+- **neo4j**: pip install neo4j
 
 ## Installation & Setup Guides:
 - **Python 3 Installation & Setup Guide**: [Link](https://realpython.com/installing-python/)
 - **Pandas Documentation**: [Link](https://pandas.pydata.org/)
 - **MySQL Connector for Python Installation Guide**: [Link](https://pynative.com/install-mysql-connector-python/)
+- **neo4j**: [Link](https://neo4j.com/docs/operations-manual/current/installation/)
 
